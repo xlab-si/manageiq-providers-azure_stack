@@ -146,7 +146,8 @@ http_interactions:
         \           \"properties\": {\r\n              \"provisioningState\": \"Succeeded\",\r\n
         \             \"privateIPAddress\": \"10.0.0.4\",\r\n              \"privateIPAllocationMethod\":
         \"Dynamic\",\r\n              \"subnet\": {\r\n                \"id\": \"/subscriptions/AZURE_STACK_SUBSCRIPTION/resourceGroups/demo-resource-group/providers/Microsoft.Network/virtualNetworks/demoNetwork/subnets/demoSubnet\"\r\n
-        \             },\r\n              \"primary\": true\r\n            }\r\n          }\r\n
+        \             },\r\n \"publicIPAddress\": {\r\n                \"id\": \"/subscriptions/AZURE_STACK_SUBSCRIPTION/resourceGroups/demo-resource-group/providers/Microsoft.Network/publicIPAddresses/publicIp\"\r\n
+        \                             \             },\r\n              \"primary\": true\r\n            }\r\n          }\r\n
         \       ],\r\n        \"dnsSettings\": {\r\n          \"dnsServers\": [],\r\n
         \         \"appliedDnsServers\": []\r\n        },\r\n        \"macAddress\":
         \"001DD8B70047\",\r\n        \"enableIPForwarding\": false,\r\n        \"networkSecurityGroup\":
@@ -291,4 +292,73 @@ http_interactions:
         \         }\r\n        ]\r\n      }\r\n    }\r\n  ]\r\n}"
     http_version: 
   recorded_at: Fri, 07 Jun 2019 09:17:08 GMT
+- request:
+    method: get
+    uri: https://AZURE_STACK_HOST/subscriptions/AZURE_STACK_SUBSCRIPTION/providers/Microsoft.Network/publicIPAddresses?api-version=2015-06-15
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Ruby/2.4.6 (x86_64-linux) ms_rest/0.7.4 ms_rest_azure/0.11.0 Azure-SDK-For-Ruby
+        azure_mgmt_network/0.18.2 Profiles/V2017_03_09/Network/Mgmt
+      Content-Type:
+      - application/json; charset=utf-8
+      Accept:
+      - application/json
+      Accept-Language:
+      - en-US
+      X-Ms-Client-Request-Id:
+      - 29c18f15-2068-4a72-8e34-9ce09f0d4dfd
+      Authorization:
+      - Bearer AZURE_STACK_TOKEN
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Cache-Control:
+      - no-cache
+      Pragma:
+      - no-cache
+      Content-Length:
+      - '842'
+      Content-Type:
+      - application/json; charset=utf-8
+      Expires:
+      - "-1"
+      X-Ms-Correlation-Request-Id:
+      - 64e0e7b6-46ba-4074-bf13-0701e416113b
+      X-Ms-Request-Id:
+      - aac73fd6-5a4b-4f81-8d7e-c030371d98a4
+      Server:
+      - Microsoft-HTTPAPI/2.0
+      Www-Authenticate:
+      - oYG3MIG0oAMKAQChCwYJKoZIgvcSAQICooGfBIGcYIGZBgkqhkiG9xIBAgICAG+BiTCBhqADAgEFoQMCAQ+iejB4oAMCARKicQRv8A043LfCT+k+bDpvfj1Qb8EnH0xqheAMdqgZCA7UpXmXqRhEGvYScwrdCEKNwHg2HRDGVJZ8ldy1oE2qQCWoMkGEYCKS0DuzaovrPypaBY5FTe1GyVnAxTnkQCkXBU00bhsUJNjFkRy+rCLKBEi3
+      X-Ms-Ratelimit-Remaining-Subscription-Reads:
+      - '14509'
+      X-Ms-Routing-Request-Id:
+      - WESTUS2:20190923T084032Z:64e0e7b6-46ba-4074-bf13-0701e416113b
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      Date:
+      - Mon, 23 Sep 2019 08:40:32 GMT
+    body:
+      encoding: UTF-8
+      string: "{\r\n  \"value\": [\r\n    {\r\n      \"name\": \"publicIp\",\r\n      \"id\":
+        \"/subscriptions/AZURE_STACK_SUBSCRIPTION/resourceGroups/demo-resource-group/providers/Microsoft.Network/publicIPAddresses/publicIp\",\r\n
+        \     \"etag\": \"W/\\\"1db739a3-520a-4d67-acc8-1480e0a6d2a1\\\"\",\r\n      \"location\":
+        \"westus2\",\r\n      \"properties\": {\r\n        \"provisioningState\":
+        \"Succeeded\",\r\n        \"resourceGuid\": \"ea846590-afef-418c-973f-d3190a9ac185\",\r\n
+        \       \"ipAddress\": \"38.102.178.150\",\r\n        \"publicIPAllocationMethod\":
+        \"Dynamic\",\r\n        \"idleTimeoutInMinutes\": 4,\r\n        \"ipConfiguration\":
+        {\r\n          \"id\": \"/subscriptions/AZURE_STACK_SUBSCRIPTION/resourceGroups/demo-resource-group/providers/Microsoft.Network/networkInterfaces/demoNic0/ipConfigurations/ipconfig1\"\r\n
+        \       }\r\n      },\r\n      \"type\": \"Microsoft.Network/publicIPAddresses\"\r\n
+        \   }\r\n  ]\r\n}"
+    http_version: 
+  recorded_at: Mon, 23 Sep 2019 08:40:32 GMT
 recorded_with: VCR 3.0.3

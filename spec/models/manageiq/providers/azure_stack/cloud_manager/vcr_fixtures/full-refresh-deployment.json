@@ -61,7 +61,8 @@
     "virtualNetworkName": "demoNetwork",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
-    "networkSecurityGroupName": "demoSecurityGroup"
+    "networkSecurityGroupName": "demoSecurityGroup",
+    "publicIpName": "publicIp"
   },
   "resources": [
     {
@@ -141,6 +142,9 @@
               "privateIPAllocationMethod": "Dynamic",
               "subnet": {
                 "id": "[variables('subnetRef')]"
+              },
+              "publicIpAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIpAddresses', variables('publicIpName'))]"
               }
             }
           }
@@ -193,6 +197,15 @@
             "storageUri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).primaryEndpoints.blob)]"
           }
         }
+      }
+    },
+    {
+      "name": "[variables('publicIpName')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2015-06-15",
+      "location": "[variables('location')]",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic"
       }
     }
   ]

@@ -24,6 +24,9 @@ describe ManageIQ::Providers::AzureStack::CloudManager::Refresher do
     let(:network)         { CloudNetwork.find_by(:name => 'demoNetwork') }
     let(:subnet)          { CloudSubnet.find_by(:name => 'demoSubnet') }
     let(:network_port)    { NetworkPort.find_by(:name => 'demoNic0') }
+    # FloatingIp has no 'name' attribute to filter on so we lookup ems_ref instead which
+    # ends with '.../<name>'
+    let(:floating_ip)     { FloatingIp.where("ems_ref ILIKE '%/publicIp'").first }
 
     let(:saving_strategy) { :recursive }
     let(:saver_strategy)  { :default }
@@ -75,6 +78,7 @@ describe ManageIQ::Providers::AzureStack::CloudManager::Refresher do
     assert_specific_subnet
     assert_specific_network_port
     assert_security_group
+    assert_specific_floating_ip
   end
 
   def assert_table_counts
@@ -88,6 +92,7 @@ describe ManageIQ::Providers::AzureStack::CloudManager::Refresher do
     expect(NetworkPort.count).to eq(1)
     expect(SecurityGroup.count).to eq(1)
     expect(OrchestrationStack.count).to eq(1)
+    expect(FloatingIp.count).to eq(1)
   end
 
   def assert_resource_group
@@ -189,5 +194,14 @@ describe ManageIQ::Providers::AzureStack::CloudManager::Refresher do
   def assert_security_group
     expect(security_group).not_to be_nil
     expect(ems_ref_suffix(security_group.ems_ref)).to match(%r{^/providers/microsoft.network/networksecuritygroups/[^/]+$})
+  end
+
+  def assert_specific_floating_ip
+    expect(ems_ref_suffix(floating_ip.ems_ref)).to match(%r{^/providers/microsoft.network/publicipaddresses/[^/]+$})
+    expect(floating_ip).to have_attributes(
+      :address      => match(/\d.\d.\d.\d.\d/),
+      :network_port => network_port,
+    )
+    expect(vm.ipaddresses).to include(floating_ip.address)
   end
 end
