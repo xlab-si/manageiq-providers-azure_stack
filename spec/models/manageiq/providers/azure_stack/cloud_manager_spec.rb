@@ -109,16 +109,16 @@ describe ManageIQ::Providers::AzureStack::CloudManager do
         [
           'base.url',
           'tenant',
-          'username',
-          MiqPassword.encrypt('password'),
+          'client_id',
+          MiqPassword.encrypt('client_key'),
           'subscription',
           :Resources,
           api_version
         ]
       end
 
-      it 'decrypts password' do
-        expect(described_class).to receive(:token).with(anything, anything, 'password', anything).and_return(fake_token)
+      it 'decrypts client secret' do
+        expect(described_class).to receive(:token).with(anything, anything, 'client_key', anything).and_return(fake_token)
         described_class.raw_connect(*args)
       end
 

@@ -29,8 +29,8 @@ FactoryBot.define do
     after(:create) do |ems|
       ems.authentications << FactoryBot.create(
         :authentication,
-        :userid   => Rails.application.secrets.azure_stack.try(:[], :userid) || 'AZURE_STACK_USERID',
-        :password => Rails.application.secrets.azure_stack.try(:[], :password) || 'AZURE_STACK_PASSWORD'
+        :userid   => Rails.application.secrets.azure_stack.try(:[], :client_id) || 'AZURE_STACK_CLIENT_ID',
+        :password => Rails.application.secrets.azure_stack.try(:[], :client_key) || 'AZURE_STACK_CLIENT_KEY'
       )
     end
   end

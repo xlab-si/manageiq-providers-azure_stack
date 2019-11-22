@@ -1,5 +1,5 @@
 describe ManageIQ::Providers::AzureStack::CloudManager::EventCatcher::Stream do
-  let(:userid)        { Rails.application.secrets.azure_stack.try(:[], :userid) || 'AZURE_STACK_USERID' }
+  let(:client_id)     { Rails.application.secrets.azure_stack.try(:[], :client_id) || 'AZURE_STACK_CLIENT_ID' }
   let(:subscription)  { Rails.application.secrets.azure_stack.try(:[], :subscription) || 'AZURE_STACK_SUBSCRIPTION' }
   let(:capture_since) { Time.parse('2019-01-07T20:00:00Z').utc }
 
@@ -54,7 +54,7 @@ describe ManageIQ::Providers::AzureStack::CloudManager::EventCatcher::Stream do
     expect(full_data).not_to be_nil
     expect(full_data).to include(
       :authorization_action   => 'Microsoft.Compute/virtualMachines/restart/action',
-      :caller                 => CGI.escape(userid),
+      :caller                 => CGI.escape(client_id),
       :category               => 'Administrative',
       :description            => '',
       :event_name             => 'BeginRequest',

@@ -9,8 +9,8 @@ module ManageIQ::Providers::AzureStack::ManagerMixin
 
     base_url     = options[:base_url]     || self.base_url
     tenant       = options[:tenant]       || azure_tenant_id
-    username     = options[:user]         || authentication_userid(options[:auth_type])
-    password     = options[:pass]         || authentication_password(options[:auth_type])
+    client_id    = options[:user]         || authentication_userid(options[:auth_type])
+    client_key   = options[:pass]         || authentication_password(options[:auth_type])
     subscription = options[:subscription] || self.subscription
     service      = options[:service]      || :Resources
     api_version  = options[:api_version]  || self.api_version
@@ -23,7 +23,7 @@ module ManageIQ::Providers::AzureStack::ManagerMixin
     # Gem currently delievers no API profile for :Monitor other than :Latest
     api_version = :Latest if service == :Monitor
 
-    self.class.raw_connect(base_url, tenant, username, password, subscription, service, api_version,
+    self.class.raw_connect(base_url, tenant, client_id, client_key, subscription, service, api_version,
                            :ad_settings => ad_settings, :token => token)
   end
 
@@ -98,16 +98,16 @@ module ManageIQ::Providers::AzureStack::ManagerMixin
             :validate   => [{:type => "required-validator"}]
           },
           {
-            :component => "text-field",
-            :name      => "endpoints.default.username",
-            :label     => "Username",
+            :component  => "text-field",
+            :name       => "endpoints.default.client_id",
+            :label      => "Client ID",
             :isRequired => true,
             :validate   => [{:type => "required-validator"}]
           },
           {
             :component  => "text-field",
-            :name       => "endpoints.default.password",
-            :label      => "Password",
+            :name       => "endpoints.default.client_key",
+            :label      => "Client Key",
             :type       => "password",
             :isRequired => true,
             :validate   => [{:type => "required-validator"}]
@@ -132,23 +132,22 @@ module ManageIQ::Providers::AzureStack::ManagerMixin
 
     def verify_credentials(args)
       default_endpoint = args.dig("endpoints", "default")
-      base_url, tenant, username, password, subscription, api_version = default_endpoint.values_at(
-        "base_url", "tenant", "username", "password", "subscription", "api_version"
+      base_url, tenant, client_id, client_key, subscription, api_version = default_endpoint.values_at(
+        "base_url", "tenant", "client_id", "client_key", "subscription", "api_version"
       )
 
-      !!raw_connect(base_url, tenant, username, password, subscription, :Resources, api_version, :validate => true)
+      !!raw_connect(base_url, tenant, client_id, client_key, subscription, :Resources, api_version, :validate => true)
     end
 
-    def raw_connect(base_url, tenant, username, password, subscription, service, api_version, ad_settings: nil, token: nil, validate: false)
+    def raw_connect(base_url, tenant, client_id, client_key, subscription, service, api_version, ad_settings: nil, token: nil, validate: false)
       require 'ms_rest_azure'
       require 'azure_mgmt_resources'
       require 'azure_mgmt_compute'
       require 'azure_mgmt_network'
       require 'azure_mgmt_monitor'
-      require 'patches/ms_rest_azure/password_token_provider' # https://github.com/Azure/azure-sdk-for-ruby/pull/2039
 
       ad_settings ||= active_directory_settings_api(base_url)
-      token       ||= token(tenant, username, MiqPassword.try_decrypt(password), ad_settings)
+      token       ||= token(tenant, client_id, MiqPassword.try_decrypt(client_key), ad_settings)
 
       options = {
         :subscription_id           => subscription,
@@ -206,12 +205,11 @@ module ManageIQ::Providers::AzureStack::ManagerMixin
       raise MiqException::MiqInvalidCredentialsError, _("Could not reach %{log}: %{msg}") % {:log => log, :msg => msg}
     end
 
-    def token(tenant, username, password, ad_settings)
-      token = MsRestAzure::PasswordTokenProvider.new(
+    def token(tenant, client_id, client_key, ad_settings)
+      token = MsRestAzure::ApplicationTokenProvider.new(
         tenant,
-        '1950a258-227b-4e31-a9cf-717495945fc2', # hard-coded for all Azure Stack environments
-        username,
-        password,
+        client_id,
+        client_key,
         ad_settings
       )
       MsRest::TokenCredentials.new(token)
